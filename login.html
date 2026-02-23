@@ -5,28 +5,44 @@
   <title>Login</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-100 flex items-center justify-center">
-    <div class="bg-white p-8 rounded-xl shadow-md w-full max-w-sm">
-      <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
-  
-      <input id="username" placeholder="Username"
-        class="w-full mb-3 p-2 border rounded focus:outline-none focus:ring" />
-  
-      <input id="password" type="password" placeholder="Password"
-        class="w-full mb-4 p-2 border rounded focus:outline-none focus:ring" />
-  
-      <button onclick="login()"
-        class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-        Login
-      </button>
-  
-      <p id="msg" class="text-red-600 text-sm mt-3 text-center"></p>
-  
-      <p class="text-center text-sm mt-4">
-        No account?
-        <a href="signup.html" class="text-blue-600 hover:underline">Sign up</a>
-      </p>
+<body class="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+ 
+<div class="w-full max-w-md bg-white p-6 sm:p-8 rounded-2xl shadow">      
+  <!-- Header -->
+  <div class="flex items-center justify-center gap-2 mb-4 flex-wrap text-center">      
+    <img src="./assets/logo.png" alt="Task Manager Logo" class="h-100 w-100" />
+      <!-- <h1 class="text-2xl font-semibold">Task Manager</h1> -->
     </div>
+
+    <h2 class="text-xl font-bold mb-4 text-center">Login</h2>
+
+    <!-- Error Banner -->
+    <div id="error" class="hidden mb-3 p-2 rounded bg-red-100 text-red-700 text-sm text-center"></div>
+
+    <input id="username" placeholder="Username"
+      class="w-full mb-3 p-3 border rounded-lg focus:outline-none focus:ring"
+      onkeydown="if(event.key==='Enter') login()" />
+
+    <div class="relative mb-4">
+      <input id="password" type="password" placeholder="Password"
+        class="w-full p-3 border rounded-lg focus:outline-none focus:ring pr-10"
+        onkeydown="if(event.key==='Enter') login()" />
+      <button onclick="togglePassword('password')" type="button"
+        class="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+        Show
+      </button>
+    </div>
+
+    <button id="loginBtn" onclick="login()"
+      class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition disabled:opacity-50">
+      Login
+    </button>
+
+    <p class="text-center text-sm mt-4">
+      No account?
+      <a href="signup.html" class="text-blue-600 hover:underline">Sign up</a>
+    </p>
+  </div>
 
   <script>
     async function login() {

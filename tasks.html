@@ -5,29 +5,32 @@
   <title>My Tasks</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-100 p-6">
-  <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
-    <h2 id="header" class="text-3xl font-bold"></h2>
-    <div class="flex justify-between items-center mb-4">
-      <h1 class="text-2xl font-bold">My Tasks</h1>
+<body class="min-h-screen bg-gray-100 p-3 sm:p-6">
+    <div class="max-w-5xl mx-auto bg-white p-4 sm:p-6 rounded-2xl shadow">
+    <!-- Header -->
+      <div class="flex items-center justify-center gap-2 mb-4 flex-wrap text-center"> 
+              <img src="./assets/logo.png" alt="Task Manager Logo" class="h-20 w-30" />
+     
+        <h1 id="header" class="text-xl sm:text-2xl font-semibold"></h1>
       
-      
-      <button onclick="logout()" class="text-red-600 hover:underline">Logout</button>
+      <button onclick="logout()" class="text-red-600 hover:underline self-start sm:self-auto">
+        Logout
+      </button>
     </div>
 
     <!-- Error Banner -->
     <div id="error" class="hidden mb-3 p-2 bg-red-100 text-red-700 rounded"></div>
 
     <!-- Create Task -->
-    <div class="flex gap-2 mb-4">
+    <div class="flex flex-col sm:flex-row gap-2 mb-4">
       <input id="title" placeholder="Task title"
-        class="flex-1 p-2 border rounded focus:outline-none focus:ring"
+        class="flex-1 p-3 border rounded-lg focus:outline-none focus:ring"
         onkeydown="if(event.key==='Enter') createTask()" />
       <input id="description" placeholder="Description"
-        class="flex-1 p-2 border rounded focus:outline-none focus:ring"
+        class="flex-1 p-3 border rounded-lg focus:outline-none focus:ring"
         onkeydown="if(event.key==='Enter') createTask()" />
       <button onclick="createTask()"
-        class="bg-blue-600 text-white px-4 rounded hover:bg-blue-700 transition">
+        class="bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition">
         Add
       </button>
     </div>
@@ -36,7 +39,7 @@
     <div id="loading" class="hidden text-center text-gray-500 mb-4">Loading tasks...</div>
 
     <!-- Task List -->
-    <div id="tasks" class="grid gap-3"></div>
+    <div id="tasks" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"></div>
   </div>
 
   <script>
