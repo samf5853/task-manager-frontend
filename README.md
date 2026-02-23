@@ -1,10 +1,3 @@
-
----
-
-## ✅ README for Frontend  
-**Repo:** https://github.com/samf5853/task-manager-frontend
-
-```markdown
 # Task Manager UI 🎨
 
 A lightweight frontend for the Task Manager API.  
