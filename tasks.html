@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>My Tasks</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-100 p-6">
+  <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+    <h2 id="header" class="text-3xl font-bold"></h2>
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-2xl font-bold">My Tasks</h1>
+      
+      
+      <button onclick="logout()" class="text-red-600 hover:underline">Logout</button>
+    </div>
+
+    <!-- Error Banner -->
+    <div id="error" class="hidden mb-3 p-2 bg-red-100 text-red-700 rounded"></div>
+
+    <!-- Create Task -->
+    <div class="flex gap-2 mb-4">
+      <input id="title" placeholder="Task title"
+        class="flex-1 p-2 border rounded focus:outline-none focus:ring"
+        onkeydown="if(event.key==='Enter') createTask()" />
+      <input id="description" placeholder="Description"
+        class="flex-1 p-2 border rounded focus:outline-none focus:ring"
+        onkeydown="if(event.key==='Enter') createTask()" />
+      <button onclick="createTask()"
+        class="bg-blue-600 text-white px-4 rounded hover:bg-blue-700 transition">
+        Add
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="hidden text-center text-gray-500 mb-4">Loading tasks...</div>
+
+    <!-- Task List -->
+    <div id="tasks" class="grid gap-3"></div>
+  </div>
+
+  <script>
+    const API = "http://localhost:8080";
+
+    function logout() {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    }
+
+    function showError(msg) {
+      const el = document.getElementById("error");
+      el.innerText = msg;
+      el.classList.remove("hidden");
+      setTimeout(() => el.classList.add("hidden"), 3000);
+    }
+
+    async function createTask() {
+      const token = localStorage.getItem("token");
+      if (!token) return window.location.href = "login.html";
+
+      const titleEl = document.getElementById("title");
+      const descEl = document.getElementById("description");
+      const title = titleEl.value.trim();
+      const description = descEl.value.trim();
+
+      if (!title) return showError("Title is required");
+
+      const res = await fetch(`${API}/api/tasks`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ title, description })
+      });
+
+      if (!res.ok) {
+        showError("Failed to create task");
+        return;
+      }
+
+      titleEl.value = "";
+      descEl.value = "";
+      await loadTasks();
+    }
+
+    async function toggleComplete(id, completed) {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API}/api/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify({ completed: !completed })
+      });
+
+      if (!res.ok) {
+        showError("Failed to update task");
+        return;
+      }
+
+      loadTasks();
+    }
+
+    async function deleteTask(id) {
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`${API}/api/tasks/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": "Bearer " + token
+        }
+      });
+
+      if (!res.ok) {
+        showError("Failed to delete task");
+        return;
+      }
+
+      loadTasks();
+    }
+
+    async function loadUser() {
+    const token = localStorage.getItem("token");
+    if (!token) return window.location.href = "login.html";
+
+    const res = await fetch(`${API}/api/users/me`, {
+        headers: { "Authorization": "Bearer " + token }
+    });
+
+    const user = await res.json();
+    document.getElementById("header").innerText = `${user.name} (${user.username})`;
+    }
+
+    async function loadTasks() {
+      const token = localStorage.getItem("token");
+      if (!token) return window.location.href = "login.html";
+
+      document.getElementById("loading").classList.remove("hidden");
+
+      const res = await fetch(`${API}/api/tasks`, {
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      document.getElementById("loading").classList.add("hidden");
+
+      if (!res.ok) {
+        showError("Failed to load tasks");
+        return;
+      }
+
+      const tasks = await res.json();
+      const container = document.getElementById("tasks");
+      container.innerHTML = "";
+
+      if (tasks.length === 0) {
+        container.innerHTML = `<p class="text-gray-500 text-center">No tasks yet.</p>`;
+        return;
+      }
+
+      tasks.forEach(t => {
+        const card = document.createElement("div");
+        card.className = `p-4 border rounded-lg shadow-sm bg-gray-50 flex items-center justify-between`;
+
+        card.innerHTML = `
+          <div class="flex items-center gap-3">
+            <input type="checkbox" ${t.completed ? "checked" : ""} 
+              onchange="toggleComplete(${t.id}, ${t.completed})" />
+            <div>
+              <p class="font-medium ${t.completed ? "line-through text-gray-400" : ""}">${t.title}</p>
+              <p class="text-sm text-gray-500">${t.description || ""}</p>
+            </div>
+          </div>
+          <button onclick="deleteTask(${t.id})"
+            class="text-red-500 hover:text-red-700 text-sm">
+            Delete
+          </button>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    loadUser();
+    loadTasks();
+  </script>
+</body>
+</html>
